@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.meanly'
+version = '0.1.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // HTTP client for OpenAI API
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
+    // JSON parsing
+    implementation 'org.json:json:20240303'
+
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+}
+
+test {
+    useJUnitPlatform()
+}
