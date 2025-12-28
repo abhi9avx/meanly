@@ -55,3 +55,8 @@ tmp/
 
 # MacOS
 .DS_Store
+
+.env
+src/main/resources/meanly.properties
+
+

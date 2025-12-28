@@ -1,32 +1,34 @@
 package com.meanly.matcher;
 
-import com.meanly.embedding.EmbeddingService;
+import com.meanly.config.ConfigLoader;
+import com.meanly.config.SemanticConfig;
+import com.meanly.embedding.OpenAIEmbeddingService;
 import com.meanly.model.SimilarityResult;
 import com.meanly.similarity.CosineSimilarityEngine;
-import com.meanly.similarity.SimilarityEngine;
-
 import java.util.List;
 
+// Main engine for semantically comparing text
 public class SemanticMatcher {
+  private final OpenAIEmbeddingService embeddings;
+  private final CosineSimilarityEngine engine = new CosineSimilarityEngine();
+  private final SemanticConfig config;
 
-    private final EmbeddingService embeddingService;
-    private final SimilarityEngine similarityEngine;
+  public SemanticMatcher() {
+    this.config = ConfigLoader.load();
+    this.embeddings = new OpenAIEmbeddingService(config.apiKey(), config.model());
+  }
 
-    public SemanticMatcher(EmbeddingService embeddingService) {
-        this.embeddingService = embeddingService;
-        this.similarityEngine = new CosineSimilarityEngine();
-    }
+  // Compares two strings and returns similarity metrics
+  public SimilarityResult compare(String t1, String t2) {
+    List<Double> v1 = embeddings.embed(t1);
+    List<Double> v2 = embeddings.embed(t2);
 
-    public SimilarityResult compare(String text1, String text2) {
+    double score = engine.calculate(v1, v2);
+    return new SimilarityResult(score, 1 - score, engine.angleInDegrees(score));
+  }
 
-        List<Double> vector1 = embeddingService.embed(text1);
-        List<Double> vector2 = embeddingService.embed(text2);
-
-        double similarity = similarityEngine.calculate(vector1, vector2);
-        double distance = 1 - similarity;
-        double angle = ((CosineSimilarityEngine) similarityEngine)
-                .angleInDegrees(similarity);
-
-        return new SimilarityResult(similarity, distance, angle);
-    }
+  // Returns true if similarity is above the configured threshold
+  public boolean isMatch(SimilarityResult res) {
+    return res.similarity() >= config.threshold();
+  }
 }

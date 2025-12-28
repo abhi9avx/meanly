@@ -1,66 +1,47 @@
 package com.meanly.embedding;
 
+import java.util.ArrayList;
+import java.util.List;
 import okhttp3.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+// Fetches semantic vectors from OpenAI
+public class OpenAIEmbeddingService {
+  private static final String URL = "https://api.openai.com/v1/embeddings";
+  private final OkHttpClient client = new OkHttpClient();
+  private final String key, model;
 
-public class OpenAIEmbeddingService implements EmbeddingService {
+  public OpenAIEmbeddingService(String key, String model) {
+    this.key = key;
+    this.model = model;
+  }
 
-    private static final String OPENAI_EMBEDDING_URL =
-            "https://api.openai.com/v1/embeddings";
+  public List<Double> embed(String text) {
+    try {
+      JSONObject body = new JSONObject().put("model", model).put("input", text);
+      Request req =
+          new Request.Builder()
+              .url(URL)
+              .addHeader("Authorization", "Bearer " + key)
+              .post(RequestBody.create(body.toString(), MediaType.parse("application/json")))
+              .build();
 
-    private final OkHttpClient httpClient = new OkHttpClient();
-    private final String apiKey;
-    private final String model;
+      try (Response res = client.newCall(req).execute()) {
+        if (!res.isSuccessful()) throw new RuntimeException("API Error: " + res.code());
 
-    public OpenAIEmbeddingService(String apiKey, String model) {
-        this.apiKey = apiKey;
-        this.model = model;
+        JSONArray arr =
+            new JSONObject(res.body().string())
+                .getJSONArray("data")
+                .getJSONObject(0)
+                .getJSONArray("embedding");
+
+        List<Double> list = new ArrayList<>();
+        for (int i = 0; i < arr.length(); i++) list.add(arr.getDouble(i));
+        return list;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Embedding failed", e);
     }
-
-    @Override
-    public List<Double> embed(String text) {
-        try {
-            JSONObject requestBody = new JSONObject();
-            requestBody.put("model", model);
-            requestBody.put("input", text);
-
-            Request request = new Request.Builder()
-                    .url(OPENAI_EMBEDDING_URL)
-                    .addHeader("Authorization", "Bearer " + apiKey)
-                    .addHeader("Content-Type", "application/json")
-                    .post(RequestBody.create(
-                            requestBody.toString(),
-                            MediaType.parse("application/json")
-                    ))
-                    .build();
-
-            Response response = httpClient.newCall(request).execute();
-
-            if (!response.isSuccessful()) {
-                throw new RuntimeException(
-                        "OpenAI API error: " + response.code());
-            }
-
-            String responseBody = response.body().string();
-
-            JSONArray embeddingArray = new JSONObject(responseBody)
-                    .getJSONArray("data")
-                    .getJSONObject(0)
-                    .getJSONArray("embedding");
-
-            List<Double> embedding = new ArrayList<>();
-            for (int i = 0; i < embeddingArray.length(); i++) {
-                embedding.add(embeddingArray.getDouble(i));
-            }
-
-            return embedding;
-
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to generate embedding", e);
-        }
-    }
+  }
 }
