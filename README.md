@@ -1,134 +1,104 @@
-# 🤖 Meanly: Semantic Similarity for Chatbot Validation
+# <p align="center">🤖 Meanly: Semantic Intelligence Engine</p>
 
-![Meanly Logo](meanly_logo.png)
+<p align="center">
+  <img src="meanly_logo.png" width="200" alt="Meanly Logo">
+</p>
 
-**Meanly** is a high-performance, professional-grade Java framework designed for **Semantic Textual Similarity (STS)**. It leverages OpenAI's state-of-the-art embedding models to understand the *intent* and *meaning* behind text, rather than just matching keywords.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-17-orange?style=for-the-badge&logo=java" alt="Java 17">
+  <img src="https://img.shields.io/badge/Gradle-9.x-lightgrey?style=for-the-badge&logo=gradle" alt="Gradle 9">
+  <img src="https://img.shields.io/badge/OpenAI-Embeddings-blue?style=for-the-badge&logo=openai" alt="OpenAI Embeddings">
+</p>
+
+<p align="center">
+  <i>A high-performance Java engine for Intent Intelligence and Semantic Textual Similarity.</i>
+</p>
 
 ---
 
-## 🌟 Why Meanly?
+## 🌟 Overview
 
-In the world of Generative AI and Chatbots, traditional "equals" or "contains" assertions are obsolete. 
-- **"I have $200"** and **"two hundred dollars are in my wallet"** mean the same thing but have 0% keyword overlap.
-- **Meanly** solves this by calculating a "Semantic Match," making it perfect for **Automated Chatbot Response Validation**.
+**Meanly** is a professional-grade Java framework built to solve the failure of traditional keyword-based matching. In the age of Generative AI, matching exact strings is no longer enough—you need to match **meanings**.
+
+Traditional "Lexical Matching" fails when:
+- Ideas are expressed using different vocabulary.
+- Sentence structures vary significantly.
+- Mixed-language or colloquialisms (like **Hinglish**) are used.
+
+**Meanly** solves this by mapping text into a 1536-dimensional mathematical vector space where "meaning" is represented by geometric proximity.
 
 ---
 
-## 🏗️ Architecture (HLD & LLD)
+## 🧰 Technical Toolbox
+
+The project is strictly built with modern, efficient technologies:
+
+- **☕ Java 17 Records**: Used for immutable, boilerplate-free data models.
+- **🐘 Gradle 9.x**: Provides a robust, modern build and testing lifecycle.
+- **🧠 OpenAI `text-embedding-3-small`**: Generates high-precision semantic vectors.
+- **📐 Cosine Similarity Logic**: The mathematical core that calculates the angular proximity between results.
+- **🌐 OkHttp 4**: A modern, high-performance networking stack for REST API communication.
+- **🧪 JUnit 5**: Professional-grade unit testing for mathematical validation.
+- **✨ Spotless (Google Format)**: Automated style enforcement for a clean, professional codebase.
+
+---
+
+## 🎨 Core Features
+
+- **🧠 Intent Intelligence**: Matches the "Thought" behind the words.
+- **🌍 Multilingual Fluidity**: Handles Hinglish and other mixed-language patterns with ease.
+- **🛡️ Secure Config**: Zero-risk API key management using a prioritized Environment/Properties fallback.
+- **⚡ Lightning Performance**: Optimized vector calculations for real-time validation.
+
+---
+
+## 🏗️ Architecture & Design Patterns
 
 ### High-Level Design (HLD)
-The flow starts from raw text and ends with a similarity score calculated in a multi-dimensional vector space.
-
 ```mermaid
-graph LR
-    A[Raw Text 1] --> C(Embedding Service)
-    B[Raw Text 2] --> C
+graph TD
+    A[Text Input A] --> C(Embedding Service)
+    B[Text Input B] --> C
     C --> D{OpenAI API}
-    D --> E[Vector 1]
-    D --> F[Vector 2]
-    E --> G(Similarity Engine)
-    F --> G
-    G --> H[Similarity Result]
-    H --> I{Threshold Check}
-    I --> J[Match / No Match]
+    D --> E[Vector Space Mapping]
+    E --> F(Similarity Engine)
+    F --> G[Cross-Product Calculation]
+    G --> H[Result Data Object]
+    H --> I{Similarity Check}
+    I --> J[Match]
+    I --> K[Mismatch]
 ```
 
 ### Low-Level Design (LLD)
-The project follows a clean, decoupled design pattern:
-- **`SemanticMatcher`**: The orchestration layer.
-- **`OpenAIEmbeddingService`**: Handles remote communication and vector conversion.
-- **`CosineSimilarityEngine`**: Performs the mathematical calculations (Dot Product / Norms).
-- **`ConfigLoader`**: Manages secure environment settings.
+- **`SemanticMatcher`**: The high-level orchestrator.
+- **`OpenAIEmbeddingService`**: Handles the transformation of strings to vectors.
+- **`CosineSimilarityEngine`**: The mathematical brain for calculating similarity.
+- **`ConfigLoader`**: Secure credential management and system configuration.
 
 ---
 
-## 📁 Project Structure
+## 🚀 Quick Launch
 
-```text
-meanly/
-├── src/
-│   ├── main/
-│   │   ├── java/com/meanly/
-│   │   │   ├── config/       # Configuration & Records
-│   │   │   ├── embedding/    # OpenAI API Integration
-│   │   │   ├── matcher/      # Main Orchestrator
-│   │   │   ├── model/        # Result Data Structures
-│   │   │   └── similarity/   # Mathematical Engines
-│   │   └── resources/
-│   │       └── meanly.properties  # [IGNORED] Local Settings
-│   └── test/                 # JUnit 5 Test Suite
-├── build.gradle              # Dependency & Spotless Config
-└── .env                      # [IGNORED] API Credentials
-```
-
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- Java 17+
-- OpenAI API Key
-
-### 2. Setup
-Clone the repo and create your local config:
-```bash
-git clone https://github.com/your-username/meanly.git
-cd meanly
-```
-
-Create a `src/main/resources/meanly.properties` file:
+### 1. Setup Configuration
+Create `src/main/resources/meanly.properties` (secured by `.gitignore`):
 ```properties
-openai.api.key=your_sk_key_here
+openai.api.key=your_secret_key
 openai.model=text-embedding-3-small
 similarity.threshold=0.75
 ```
 
-### 3. Run Tests
+### 2. Execute
 ```bash
-./gradlew test
+./gradlew clean test
 ```
 
 ---
 
-## 💡 Usage Example
-
-```java
-SemanticMatcher matcher = new SemanticMatcher();
-
-// These sentences have the same meaning but different words
-String expected = "Your balance is 2 Lakhs";
-String actual = "aapke account mai two hundred thousand rupyaa hai";
-
-SimilarityResult result = matcher.compare(expected, actual);
-
-if (matcher.isMatch(result)) {
-    System.out.println("✅ Semantic Match Found! Score: " + result.similarity());
-}
-```
+## 🤝 Community & Extension
+Meanly is built to be a reliable foundation for any Java-based NLP or validation project.
+1. **Fork** the repo.
+2. **Clone** and contribute.
+3. Run `./gradlew spotlessApply` to maintain formatting.
 
 ---
-
-## 🛠️ Tech Stack & Features
-- **Java 17 Records**: Minimal boilerplate, clean data models.
-- **OpenAI Embeddings**: Industry-standard vector generation.
-- **Spotless & Google Java Format**: Guaranteed 100% clean code style.
-- **OkHttp 4**: Robust, modern networking.
-- **Mermaid Diagrams**: Interactive architectural visualization.
-
----
-
-## 🤝 Contributing & Forking
-1. **Fork** the repository.
-2. Create your **Feature Branch**.
-3. Run `./gradlew spotlessApply` to ensure formatting matches.
-4. Open a **Pull Request**.
-
----
-
-## 🗺️ Roadmap
-- [ ] Support for Local LLMs (Ollama Integration).
-- [ ] Batch processing for large datasets.
-- [ ] Support for Jaccard and Euclidean distances.
-
----
-*Created with ❤️ by [Abhinav Kumar](https://github.com/abhi9avx)*
+*Created with ❤️ for the Quality Engineering community by [Abhinav Kumar](https://github.com/abhi9avx)*

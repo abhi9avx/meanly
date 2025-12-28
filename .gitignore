@@ -60,3 +60,6 @@ tmp/
 src/main/resources/meanly.properties
 
 
+
+# Assets
+meanly_logo.png
